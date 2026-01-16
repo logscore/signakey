@@ -1,5 +1,13 @@
 <script lang="ts">
+    import Controls from "$lib/components/Controls.svelte";
     import StrokeRecorder from "$lib/components/StrokeRecorder.svelte";
+    import { KEYBOARD_WIDTH, KEYBOARD_HEIGHT } from "$lib/constants";
+
+    let strokeRecorder: StrokeRecorder;
+
+    function handleReset() {
+        strokeRecorder?.showKeyboard();
+    }
 </script>
 
 <svelte:head>
@@ -11,23 +19,17 @@
 </svelte:head>
 
 <main
-    class="min-h-screen bg-black flex flex-col items-center justify-center p-8"
+    class="min-h-screen bg-black flex flex-col items-center justify-center p-8 pb-32"
 >
-    <!-- Header -->
-    <div class="text-center mb-12">
-        <h1 class="text-4xl font-bold text-white mb-3">KeySign</h1>
-        <p class="text-neutral-500 text-lg">Visualize your typing patterns</p>
+    <!-- Main visualization area -->
+    <div>
+        <StrokeRecorder bind:this={strokeRecorder} />
     </div>
 
-    <!-- Main App -->
-    <div
-        class="bg-neutral-950 border border-neutral-800 rounded-2xl p-8 shadow-2xl"
-    >
-        <StrokeRecorder />
-    </div>
-
-    <!-- Footer -->
-    <footer class="mt-12 text-neutral-600 text-sm">
-        Type letters A-Z to create stroke paths
-    </footer>
+    <!-- Floating controls toolbar -->
+    <Controls
+        keyboardWidth={KEYBOARD_WIDTH}
+        keyboardHeight={KEYBOARD_HEIGHT}
+        onReset={handleReset}
+    />
 </main>

@@ -72,7 +72,7 @@
     class:active={activeKey === " "}
     style={getSpacebarStyle()}
   >
-    SPACE
+    _____
   </div>
 </div>
 
