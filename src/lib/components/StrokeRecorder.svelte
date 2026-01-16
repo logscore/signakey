@@ -48,7 +48,7 @@
         }
         fadeTimeout = setTimeout(() => {
             keyboardVisible = false;
-        }, 2500);
+        }, 3000);
     }
 
     // Show keyboard on click
@@ -60,7 +60,7 @@
         }
         fadeTimeout = setTimeout(() => {
             keyboardVisible = false;
-        }, 2500);
+        }, 3000);
     }
 
     onMount(() => {
@@ -90,7 +90,7 @@
         style="width: {KEYBOARD_WIDTH}px; height: {KEYBOARD_HEIGHT}px;"
         onclick={handleWrapperClick}
     >
-        <div class="keyboard-fade" class:hidden={!keyboardVisible}>
+        <div class="keyboard-fade" class:faded-out={!keyboardVisible}>
             <Keyboard
                 activeKey={strokeStore.activeKey}
                 keySize={KEY_SIZE}
@@ -107,11 +107,12 @@
 
 <style>
     .keyboard-fade {
-        transition: opacity 3s ease;
+        transition: opacity 0s;
         opacity: 1;
     }
 
-    .keyboard-fade.hidden {
+    .keyboard-fade.faded-out {
+        transition: opacity 1s ease;
         opacity: 0;
         pointer-events: none;
     }
