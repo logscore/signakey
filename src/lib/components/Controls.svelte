@@ -1,4 +1,6 @@
 <script lang="ts">
+    import { onMount, onDestroy } from "svelte";
+    import { browser } from "$app/environment";
     import { strokeStore } from "$lib/stores/stroke.svelte";
     import { exportAsSvg } from "$lib/utils/export";
 
@@ -10,12 +12,16 @@
 
     let { keyboardWidth, keyboardHeight, onReset }: Props = $props();
 
+    // Detect OS for shortcut display
+    let isMac = $state(false);
+
     function handleReset() {
         strokeStore.reset();
         onReset?.();
     }
 
     async function handleExportSvg() {
+        if (strokeStore.points.length < 2) return;
         await exportAsSvg(
             strokeStore.points,
             keyboardWidth,
@@ -23,10 +29,35 @@
             "keystroke.svg",
         );
     }
+
+    function handleKeyDown(event: KeyboardEvent) {
+        const isModifier = event.metaKey || event.ctrlKey;
+
+        if (isModifier && event.key.toLowerCase() === "c") {
+            event.preventDefault();
+            handleReset();
+        }
+
+        if (isModifier && event.key.toLowerCase() === "s") {
+            event.preventDefault();
+            handleExportSvg();
+        }
+    }
+
+    onMount(() => {
+        isMac = navigator.platform.toUpperCase().indexOf("MAC") >= 0;
+        window.addEventListener("keydown", handleKeyDown);
+    });
+
+    onDestroy(() => {
+        if (browser) {
+            window.removeEventListener("keydown", handleKeyDown);
+        }
+    });
 </script>
 
 <div
-    class="controls-toolbar flex items-center justify-center gap-3 fixed bottom-6 left-1/2 -translate-x-1/2 px-5 py-2 rounded-full bg-neutral-900/90 backdrop-blur-md border border-neutral-800 shadow-2xl z-50 transition-all hover:border-neutral-700"
+    class="controls-toolbar flex items-center justify-center gap-3 fixed bottom-6 left-1/2 -translate-x-1/2 px-5 py-2 rounded-full bg-neutral-900 backdrop-blur-md border border-neutral-800 shadow-2xl z-50 transition-all"
 >
     <button
         onclick={handleReset}
@@ -48,9 +79,10 @@
             <path d="M3 3v5h5" />
         </svg>
         <span class="text-xs">Clear</span>
+        <kbd class="shortcut">{isMac ? "⌘" : "Ctrl"}+C</kbd>
     </button>
 
-    <div class="h-4 w-px bg-neutral-800"></div>
+    <div class="h-4 w-px bg-neutral-600"></div>
 
     <button
         onclick={handleExportSvg}
@@ -73,7 +105,8 @@
             <polyline points="7 10 12 15 17 10" />
             <line x1="12" x2="12" y1="15" y2="3" />
         </svg>
-        <span class="text-xs">Export SVG</span>
+        <span class="text-xs">Save</span>
+        <kbd class="shortcut">{isMac ? "⌘" : "Ctrl"}+S</kbd>
     </button>
 </div>
 
@@ -109,12 +142,27 @@
 
     .btn-secondary {
         background: transparent;
-        color: #a3a3a3;
+        color: #e2e2e2;
         border: 1px solid transparent;
     }
 
     .btn-secondary:hover:not(:disabled) {
         color: #ffffff;
         background: rgba(255, 255, 255, 0.1);
+    }
+
+    .shortcut {
+        font-family: system-ui, sans-serif;
+        font-size: 0.75rem;
+        padding: 0.125rem 0.25rem;
+        border-radius: 0.25rem;
+        background: rgba(255, 255, 255, 0.1);
+        color: #a3a3a3;
+        margin-left: 0.25rem;
+    }
+
+    .btn-primary .shortcut {
+        background: rgba(79, 79, 79, 0.1);
+        color: #6d6c6c;
     }
 </style>

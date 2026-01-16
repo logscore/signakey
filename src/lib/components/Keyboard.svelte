@@ -33,7 +33,7 @@
 
   function getSpacebarStyle(): string {
     // Center the spacebar under the keyboard
-    const spaceWidth = 6 * keySize + 5 * keyGap; // 6 keys wide
+    const spaceWidth = 5 * keySize + 5 * keyGap; // 6 keys wide
     const totalWidth = 10 * keySize + 9 * keyGap;
     const left = (totalWidth - spaceWidth) / 2;
     const top = 3 * (keySize + keyGap);
@@ -51,13 +51,13 @@
 </script>
 
 <div
-  class="keyboard-container relative"
+  class="keyboard-container relative cursor-default"
   style="width: {getKeyboardWidth()}px; height: {getKeyboardHeight()}px;"
 >
   {#each rows as row, rowIndex}
     {#each row as key, colIndex}
       <div
-        class="key absolute flex items-center justify-center rounded-lg font-semibold text-lg select-none transition-all duration-100"
+        class="key absolute flex items-center justify-center rounded-lg font-medium text-lg select-none"
         class:active={activeKey === key}
         style={getKeyStyle(key, rowIndex, colIndex)}
       >
@@ -68,31 +68,27 @@
 
   <!-- Spacebar -->
   <div
-    class="key absolute flex items-center justify-center rounded-lg font-semibold text-sm select-none transition-all duration-100"
+    class="key absolute flex items-center justify-center rounded-lg font-medium text-sm select-none"
     class:active={activeKey === " "}
     style={getSpacebarStyle()}
-  >
-    _____
-  </div>
+  ></div>
 </div>
 
 <style>
   .key {
-    background: #1a1a1a;
-    color: #888888;
-    border: 1px solid #333333;
-    box-shadow:
-      0 4px 6px -1px rgba(0, 0, 0, 0.3),
-      0 2px 4px -2px rgba(0, 0, 0, 0.2);
+    cursor: default;
+    background: #0a0a0a;
+    color: #b0b0b0;
+    border: 1px solid #4e4e4e;
+    transition: all 200ms cubic-bezier(0.16, 1, 0.3, 1);
   }
 
   .key.active {
-    background: #ffffff;
-    color: #000000;
-    border-color: #ffffff;
-    box-shadow:
-      0 0 20px rgba(255, 255, 255, 0.3),
-      0 4px 6px -1px rgba(255, 255, 255, 0.2);
-    transform: scale(1.05);
+    /* background: #ffffff;
+    color: #000000; */
+    border-color: #b0b0b0;
+    box-shadow: 0 0 25px rgba(255, 255, 255, 0.15);
+    transform: scale(0.95);
+    /* z-index: 10; */
   }
 </style>

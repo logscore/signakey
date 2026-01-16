@@ -1,7 +1,7 @@
 // Keyboard layout constants
 
-export const KEY_SIZE = 60;
-export const KEY_GAP = 6;
+export const KEY_SIZE = 64;
+export const KEY_GAP = 8;
 
 // Keyboard dimensions
 export const KEYBOARD_WIDTH = 10 * KEY_SIZE + 9 * KEY_GAP;  // 654px

@@ -11,11 +11,13 @@
 </script>
 
 <svelte:head>
-    <title>KeySign - QWERTY Stroke Path</title>
+    <title>KeySign</title>
     <meta
         name="description"
-        content="Visualize typing patterns by drawing stroke paths on a virtual QWERTY keyboard"
+        content="Visualize your name on a QWERTY keyboard"
     />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#000000" />
 </svelte:head>
 
 <main

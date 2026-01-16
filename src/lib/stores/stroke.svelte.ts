@@ -9,6 +9,9 @@ export interface StrokePoint {
     timestamp: number;
 }
 
+// Maximum number of characters
+const MAX_LENGTH = 50;
+
 // Create a stroke store with runes
 function createStrokeStore() {
     let points = $state<StrokePoint[]>([]);
@@ -23,6 +26,9 @@ function createStrokeStore() {
 
     function addPoint(key: string) {
         if (!isValidKey(key)) return;
+
+        // Enforce max length
+        if (points.length >= MAX_LENGTH) return;
 
         const normalized = normalizeKey(key);
         const position = getKeyPixelPosition(normalized, keySize, keyGap, offsetX, offsetY);
@@ -76,6 +82,7 @@ function createStrokeStore() {
         get activeKey() { return activeKey; },
         get keySize() { return keySize; },
         get keyGap() { return keyGap; },
+        get typedText() { return points.map(p => p.key === ' ' ? ' ' : p.key.toLowerCase()).join(''); },
         addPoint,
         reset,
         updateLayout,
