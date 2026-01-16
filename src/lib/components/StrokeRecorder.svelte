@@ -45,6 +45,26 @@
 
         const key = event.key;
 
+        // Handle Backspace
+        if (key === "Backspace") {
+            event.preventDefault();
+            strokeStore.removeLastPoint();
+
+            // Show keyboard when typing
+            keyboardVisible = true;
+
+            // Reset fade timer
+            if (fadeTimeout) {
+                clearTimeout(fadeTimeout);
+            }
+            if (strokeStore.points.length > 0) {
+                fadeTimeout = setTimeout(() => {
+                    keyboardVisible = false;
+                }, 3000);
+            }
+            return;
+        }
+
         // Only accept A-Z (and optionally space)
         if (!isValidKey(key)) return;
 

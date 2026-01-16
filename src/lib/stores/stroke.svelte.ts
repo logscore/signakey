@@ -63,6 +63,11 @@ function createStrokeStore() {
         activeKey = null;
     }
 
+    function removeLastPoint() {
+        if (points.length === 0) return;
+        points = points.slice(0, -1);
+    }
+
     function updateLayout(size: number, gap: number, ox: number, oy: number) {
         keySize = size;
         keyGap = gap;
@@ -84,6 +89,7 @@ function createStrokeStore() {
         get keyGap() { return keyGap; },
         get typedText() { return points.map(p => p.key === ' ' ? ' ' : p.key.toLowerCase()).join(''); },
         addPoint,
+        removeLastPoint,
         reset,
         updateLayout,
     };
