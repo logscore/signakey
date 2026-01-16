@@ -13,6 +13,7 @@ services:
     environment:
       - NODE_ENV=production
       - PORT=3000
+      - DATABASE_URL=/app/data/sqlite.db
     # Resource limits: 1 CPU core, 1GB memory
     deploy:
       resources:

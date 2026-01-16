@@ -3,17 +3,18 @@ FROM oven/bun:1-alpine AS builder
 
 WORKDIR /app
 
-# Install dependencies for native modules (better-sqlite3)
-RUN apk add --no-cache python3 make g++ git
 
 # Copy package files
 COPY package.json bun.lock ./
 
-# Install dependencies
-RUN bun install --frozen-lockfile
+# Install dependencies (skip native module scripts since we use bun:sqlite at runtime)
+RUN bun install --frozen-lockfile --ignore-scripts
 
 # Copy source code
 COPY . .
+
+# Create empty db file for build step (the real db is in the mounted volume at runtime)
+RUN touch sqlite.db
 
 # Build the application
 RUN bun run build
@@ -22,9 +23,6 @@ RUN bun run build
 FROM oven/bun:1-alpine AS production
 
 WORKDIR /app
-
-# Install runtime dependencies for better-sqlite3
-RUN apk add --no-cache libstdc++
 
 # Create non-root user for security
 RUN addgroup -g 1001 -S nodejs && \
