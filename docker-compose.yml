@@ -1,0 +1,30 @@
+services:
+  signakey:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: signakey
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    volumes:
+      # Persist SQLite database
+      - ./data:/app/data
+    environment:
+      - NODE_ENV=production
+      - PORT=3000
+    # Resource limits: 1 CPU core, 1GB memory
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: 1G
+        reservations:
+          cpus: "0.5"
+          memory: 512M
+    # Security options
+    security_opt:
+      - no-new-privileges:true
+    read_only: true
+    tmpfs:
+      - /tmp:mode=1777,size=64M

@@ -11,7 +11,7 @@
 </script>
 
 <svelte:head>
-    <title>KeySign</title>
+    <title>Signakey</title>
     <meta
         name="description"
         content="Visualize your name on a QWERTY keyboard"
