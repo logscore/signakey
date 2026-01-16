@@ -1,6 +1,7 @@
 <script lang="ts">
     import { onMount, onDestroy } from "svelte";
     import { browser } from "$app/environment";
+    import { createMutation } from "@tanstack/svelte-query";
     import { strokeStore } from "$lib/stores/stroke.svelte";
     import { exportAsSvg } from "$lib/utils/export";
 
@@ -14,10 +15,44 @@
 
     // Detect OS for shortcut display
     let isMac = $state(false);
+    let statusMessage = $state("");
+    let statusType = $state<"success" | "error">("success");
+    let statusTimeout: ReturnType<typeof setTimeout>;
+
+    const claimMutation = createMutation(() => ({
+        mutationFn: async (text: string) => {
+            const res = await fetch("/api/signatures/claim", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ text }),
+            });
+            const data = await res.json();
+            if (!res.ok) throw new Error(data.error || "Failed to claim");
+            return data;
+        },
+        onSuccess: () => {
+            handleExportSvg();
+            showStatus("Signature Claimed!", "success");
+        },
+        onError: (error: Error) => {
+            showStatus(error.message, "error");
+        },
+    }));
+
+    function showStatus(message: string, type: "success" | "error") {
+        statusMessage = message;
+        statusType = type;
+        if (statusTimeout) clearTimeout(statusTimeout);
+        statusTimeout = setTimeout(() => {
+            statusMessage = "";
+        }, 3000);
+    }
 
     function handleReset() {
         strokeStore.reset();
         onReset?.();
+        statusMessage = "";
+        claimMutation.reset();
     }
 
     async function handleExportSvg() {
@@ -30,6 +65,11 @@
         );
     }
 
+    function handleClaim() {
+        if (strokeStore.points.length < 2) return;
+        claimMutation.mutate(strokeStore.typedText);
+    }
+
     function handleKeyDown(event: KeyboardEvent) {
         const isModifier = event.metaKey || event.ctrlKey;
 
@@ -40,7 +80,7 @@
 
         if (isModifier && event.key.toLowerCase() === "s") {
             event.preventDefault();
-            handleExportSvg();
+            handleClaim();
         }
     }
 
@@ -55,6 +95,31 @@
         }
     });
 </script>
+
+<!-- Status Toast -->
+<div
+    class="fixed bottom-24 left-1/2 -translate-x-1/2 z-50 pointer-events-none transition-all duration-300"
+    class:opacity-0={!statusMessage}
+    class:translate-y-4={!statusMessage}
+>
+    <div
+        class="px-4 py-2 rounded-lg backdrop-blur-md shadow-lg border text-sm font-medium"
+        class:bg-green-500-20={statusType === "success"}
+        class:text-green-200={statusType === "success"}
+        class:border-green-500-30={statusType === "success"}
+        class:bg-red-500-20={statusType === "error"}
+        class:text-red-200={statusType === "error"}
+        class:border-red-500-30={statusType === "error"}
+        style="background: {statusType === 'success'
+            ? 'rgba(34, 197, 94, 0.2)'
+            : 'rgba(239, 68, 68, 0.2)'}; 
+                border-color: {statusType === 'success'
+            ? 'rgba(34, 197, 94, 0.3)'
+            : 'rgba(239, 68, 68, 0.3)'};"
+    >
+        {statusMessage}
+    </div>
+</div>
 
 <div
     class="controls-toolbar flex items-center justify-center gap-3 fixed bottom-6 left-1/2 -translate-x-1/2 px-5 py-2 rounded-full bg-neutral-900 backdrop-blur-md border border-neutral-800 shadow-2xl z-50 transition-all"
@@ -83,30 +148,63 @@
     </button>
 
     <div class="h-4 w-px bg-neutral-600"></div>
-
+    <!-- 
     <button
         onclick={handleExportSvg}
-        class="btn btn-primary"
+        class="btn btn-secondary"
         disabled={strokeStore.points.length < 2}
         aria-label="Export as SVG"
     >
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            width="16"
-            height="16"
-            viewBox="0 0 24 24"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="2"
-            stroke-linecap="round"
-            stroke-linejoin="round"
-        >
-            <path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" />
-            <polyline points="7 10 12 15 17 10" />
-            <line x1="12" x2="12" y1="15" y2="3" />
-        </svg>
         <span class="text-xs">Save</span>
         <kbd class="shortcut">{isMac ? "⌘" : "Ctrl"}+S</kbd>
+    </button>
+
+    <div class="h-4 w-px bg-neutral-600"></div> -->
+
+    <button
+        onclick={handleClaim}
+        class="btn btn-primary"
+        disabled={strokeStore.points.length < 2 || claimMutation.isPending}
+        aria-label="Claim Signature"
+    >
+        {#if claimMutation.isPending}
+            <svg
+                class="animate-spin -ml-1 mr-2 h-4 w-4 text-black"
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+            >
+                <circle
+                    class="opacity-25"
+                    cx="12"
+                    cy="12"
+                    r="10"
+                    stroke="currentColor"
+                    stroke-width="4"
+                ></circle>
+                <path
+                    class="opacity-75"
+                    fill="currentColor"
+                    d="M4 12a8 8 0 018-8V0C5.373 0 0 5.373 0 12h4zm2 5.291A7.962 7.962 0 014 12H0c0 3.042 1.135 5.824 3 7.938l3-2.647z"
+                ></path>
+            </svg>
+            <span class="text-xs">Claiming...</span>
+        {:else}
+            <svg
+                xmlns="http://www.w3.org/2000/svg"
+                width="16"
+                height="16"
+                viewBox="0 0 24 24"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2"
+                stroke-linecap="round"
+                stroke-linejoin="round"
+            >
+                <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
+            </svg>
+            <span class="text-xs">Claim</span>
+        {/if}
     </button>
 </div>
 
@@ -121,6 +219,7 @@
         font-size: 0.75rem;
         transition: all 150ms ease;
         cursor: pointer;
+        white-space: nowrap;
     }
 
     .btn:disabled {
