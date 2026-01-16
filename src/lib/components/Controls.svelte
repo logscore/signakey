@@ -148,18 +148,6 @@
     </button>
 
     <div class="h-4 w-px bg-neutral-600"></div>
-    <!-- 
-    <button
-        onclick={handleExportSvg}
-        class="btn btn-secondary"
-        disabled={strokeStore.points.length < 2}
-        aria-label="Export as SVG"
-    >
-        <span class="text-xs">Save</span>
-        <kbd class="shortcut">{isMac ? "⌘" : "Ctrl"}+S</kbd>
-    </button>
-
-    <div class="h-4 w-px bg-neutral-600"></div> -->
 
     <button
         onclick={handleClaim}
@@ -204,6 +192,7 @@
                 <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z" />
             </svg>
             <span class="text-xs">Claim</span>
+            <kbd class="shortcut">{isMac ? "⌘" : "Ctrl"}+S</kbd>
         {/if}
     </button>
 </div>

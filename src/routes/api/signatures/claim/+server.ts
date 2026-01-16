@@ -34,7 +34,7 @@ export async function POST({ request, getClientAddress }: RequestEvent) {
         }
 
         // Rate limit check
-        const ONE_HOUR = 60 * 60 * 1000;
+        const ONE_HOUR = 3 * 60 * 1000;
         const recentClaims = await db.select().from(signatures).all(); // Optimize in real prod
 
         // Filter in memory for simplicity with better-sqlite3 synchronous
