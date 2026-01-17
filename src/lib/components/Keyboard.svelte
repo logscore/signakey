@@ -20,9 +20,9 @@
   const rowOffsets = [0, 0.25, 0.75];
 
   function getKeyStyle(
-    key: string,
+    _key: string,
     rowIndex: number,
-    colIndex: number,
+    colIndex: number
   ): string {
     const offset = rowOffsets[rowIndex];
     const left = (colIndex + offset) * (keySize + keyGap);
