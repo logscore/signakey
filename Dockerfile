@@ -1,7 +1,10 @@
 # Build stage
-FROM oven/bun:1-alpine AS builder
+FROM oven/bun:1.3.2-alpine AS builder
 
 WORKDIR /app
+
+# Install build dependencies for native modules
+RUN apk add --no-cache python3 make g++
 
 COPY package.json bun.lock ./
 
@@ -9,7 +12,6 @@ RUN bun install --frozen-lockfile --ignore-scripts
 
 # Copy source code
 COPY . .
-RUN touch sqlite.db
 RUN bun run build
 
 # Production stage
