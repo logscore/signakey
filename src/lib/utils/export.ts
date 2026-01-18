@@ -33,50 +33,23 @@ export function generateSvg(
 }
 
 /**
- * Export as SVG file using File System Access API
+ * Export as SVG file - automatically downloads to default folder
  */
-export async function exportAsSvg(
+export function exportAsSvg(
   points: StrokePoint[],
   width: number,
   height: number,
   filename = "keystroke.svg"
 ) {
-  try {
-    const svgContent = generateSvg(points, width, height);
-    const blob = new Blob([svgContent], { type: "image/svg+xml" });
-
-    // Try to use File System Access API (opens save dialog)
-    if ("showSaveFilePicker" in window) {
-      // biome-ignore lint/suspicious/noExplicitAny: File System Access API is not in standard TypeScript DOM types
-      const handle = await (window as any).showSaveFilePicker({
-        suggestedName: filename,
-        types: [
-          {
-            description: "SVG Image",
-            accept: { "image/svg+xml": [".svg"] },
-          },
-        ],
-      });
-      const writable = await handle.createWritable();
-      await writable.write(blob);
-      await writable.close();
-    } else {
-      // Fallback for browsers without File System Access API
-      fallbackDownload(blob, filename);
-    }
-  } catch (err: unknown) {
-    // User cancelled the save dialog
-    if (err instanceof DOMException && err.name === "AbortError") {
-      return;
-    }
-    console.error("Export failed:", err);
-  }
+  const svgContent = generateSvg(points, width, height);
+  const blob = new Blob([svgContent], { type: "image/svg+xml" });
+  downloadBlob(blob, filename);
 }
 
 /**
- * Fallback download for browsers without File System Access API
+ * Download blob to default downloads folder
  */
-function fallbackDownload(blob: Blob, filename: string) {
+function downloadBlob(blob: Blob, filename: string) {
   const url = URL.createObjectURL(blob);
   const link = document.createElement("a");
   link.download = filename;

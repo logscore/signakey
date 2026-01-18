@@ -1,6 +1,4 @@
 <script lang="ts">
-  import { KEY_POSITIONS, type KeyPosition } from "$lib/keyboard";
-
   interface Props {
     activeKey: string | null;
     keySize?: number;

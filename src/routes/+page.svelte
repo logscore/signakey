@@ -12,7 +12,7 @@
 </script>
 
 <svelte:head>
-  <title>Signakey</title>
+  <title>Logan Reeder - Sigkey</title>
   <meta name="description" content="Visualize your name on a QWERTY keyboard">
 </svelte:head>
 

@@ -63,12 +63,8 @@
     if (strokeStore.points.length < 2) {
       return;
     }
-    await exportAsSvg(
-      strokeStore.points,
-      keyboardWidth,
-      keyboardHeight,
-      "keystroke.svg"
-    );
+    const filename = `${strokeStore.typedText || "keystroke"}.svg`;
+    exportAsSvg(strokeStore.points, keyboardWidth, keyboardHeight, filename);
   }
 
   function handleClaim() {
