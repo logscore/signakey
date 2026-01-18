@@ -1,6 +1,6 @@
 import { json, type RequestEvent } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
-import { db } from "$lib/server/db";
+import { getDb } from "$lib/server/db";
 import { signatures } from "$lib/server/db/schema";
 
 export async function POST({ request }: RequestEvent) {
@@ -11,7 +11,7 @@ export async function POST({ request }: RequestEvent) {
   }
 
   try {
-    const existing = await db
+    const existing = await getDb()
       .select()
       .from(signatures)
       .where(eq(signatures.text, text.toLowerCase()))
