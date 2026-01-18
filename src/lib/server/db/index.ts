@@ -1,11 +1,10 @@
-import { Database } from "bun:sqlite";
-import { drizzle } from "drizzle-orm/bun-sqlite";
+import { drizzle } from "drizzle-orm/node-postgres";
+import { Pool } from "pg";
 
 import { env } from "$env/dynamic/private";
 
-// Initialize SQLite database
-// In production, set DATABASE_URL=/app/data/sqlite.db
-const dbPath = env.DATABASE_URL;
-const sqlite = new Database(dbPath);
+const pool = new Pool({
+  connectionString: env.DATABASE_URL,
+});
 
-export const db = drizzle(sqlite);
+export const db = drizzle(pool);

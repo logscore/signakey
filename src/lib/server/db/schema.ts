@@ -1,8 +1,8 @@
-import { integer, sqliteTable, text } from "drizzle-orm/sqlite-core";
+import { pgTable, serial, text, timestamp } from "drizzle-orm/pg-core";
 
-export const signatures = sqliteTable("signatures", {
-  id: integer("id").primaryKey(),
-  text: text("text").notNull().unique(), // The typed signature text
-  createdAt: integer("created_at", { mode: "timestamp" }).notNull(),
-  ipHash: text("ip_hash").notNull(), // For rate limiting/abuse prevention
+export const signatures = pgTable("signatures", {
+  id: serial("id").primaryKey(),
+  text: text("text").notNull().unique(),
+  createdAt: timestamp("created_at").notNull(),
+  ipHash: text("ip_hash").notNull(),
 });
