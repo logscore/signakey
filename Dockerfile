@@ -7,17 +7,17 @@ COPY package.json bun.lock ./
 
 RUN bun install --frozen-lockfile --ignore-scripts
 
-# Copy source code
 COPY . .
 
-# Build without database access
 RUN bun run svelte-kit sync
 RUN bun run build
 
 # Production stage
 FROM oven/bun:1-alpine AS production
-
 WORKDIR /app
+
+# Install git here so it exists in the final image
+RUN apk add --no-cache git
 
 RUN addgroup -g 1001 -S nodejs && \
     adduser -S sveltekit -u 1001

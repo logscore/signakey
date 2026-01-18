@@ -1,7 +1,7 @@
 import crypto from "node:crypto";
 import { json, type RequestEvent } from "@sveltejs/kit";
 import { eq } from "drizzle-orm";
-import { getDb } from "$lib/server/db";
+import { db } from "$lib/server/db";
 import { signatures } from "$lib/server/db/schema";
 
 export async function POST({ request, getClientAddress }: RequestEvent) {
@@ -21,7 +21,7 @@ export async function POST({ request, getClientAddress }: RequestEvent) {
   const ONE_HOUR = 3 * 60 * 1000;
 
   try {
-    const existing = await getDb()
+    const existing = await db
       .select()
       .from(signatures)
       .where(eq(signatures.text, text.toLowerCase()))
@@ -31,7 +31,7 @@ export async function POST({ request, getClientAddress }: RequestEvent) {
       return json({ error: "Signature already claimed" }, { status: 409 });
     }
 
-    const recentClaims = await getDb().select().from(signatures);
+    const recentClaims = await db.select().from(signatures);
 
     const userRecentClaims = recentClaims.filter(
       (s) =>
@@ -46,7 +46,7 @@ export async function POST({ request, getClientAddress }: RequestEvent) {
       );
     }
 
-    await getDb().insert(signatures).values({
+    await db.insert(signatures).values({
       text: text.toLowerCase(),
       createdAt: new Date(),
       ipHash,
