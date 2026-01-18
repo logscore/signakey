@@ -26,7 +26,10 @@ COPY --from=builder --chown=sveltekit:nodejs /app/build ./build
 COPY --from=builder --chown=sveltekit:nodejs /app/package.json ./
 COPY --from=builder --chown=sveltekit:nodejs /app/node_modules ./node_modules
 COPY --from=builder --chown=sveltekit:nodejs /app/drizzle ./drizzle
-COPY --from=builder --chown=sveltekit:nodejs /app/drizzle.config.ts ./
+COPY --from=builder --chown=sveltekit:nodejs /app/migrate.ts ./
+COPY --from=builder --chown=sveltekit:nodejs /app/entrypoint.sh ./
+
+RUN chmod +x entrypoint.sh
 
 USER sveltekit
 
@@ -36,4 +39,4 @@ ENV HOST=0.0.0.0
 
 EXPOSE 3000
 
-CMD ["bun", "build/index.js"]
+ENTRYPOINT ["./entrypoint.sh"]
