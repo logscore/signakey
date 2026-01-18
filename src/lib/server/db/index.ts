@@ -1,10 +1,16 @@
-import { drizzle } from "drizzle-orm/node-postgres";
+import { drizzle, type NodePgDatabase } from "drizzle-orm/node-postgres";
 import { Pool } from "pg";
 
-import { env } from "$env/dynamic/private";
+let _db: NodePgDatabase | null = null;
 
-const pool = new Pool({
-  connectionString: env.DATABASE_URL,
+export const db = new Proxy({} as NodePgDatabase, {
+  get(_, prop) {
+    if (!_db) {
+      const url = process.env.DATABASE_URL;
+      if (!url) throw new Error("DATABASE_URL is not set");
+      const pool = new Pool({ connectionString: url });
+      _db = drizzle(pool);
+    }
+    return Reflect.get(_db, prop);
+  },
 });
-
-export const db = drizzle(pool);

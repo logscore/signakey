@@ -15,7 +15,7 @@ export async function POST({ request }: RequestEvent) {
       .select()
       .from(signatures)
       .where(eq(signatures.text, text.toLowerCase()))
-      .get();
+      .then((rows) => rows[0]);
 
     return json({ available: !existing });
   } catch (e) {
